@@ -1,0 +1,101 @@
+http:
+  port: 8080
+admin:
+  port: 9876
+  host: localhost
+log:
+  level: debug
+
+apiEndpoints:
+  api:
+    host: localhost
+    paths: "/ip"
+  seismicData:
+    host: "localhost"
+    paths: "/seismic/*"
+  DaylightData:
+    host: "localhost"
+    paths: "/daylight/*"
+  LocationNowData:
+    host: "localhost"
+    paths: "/iss-now/*"
+  PeopleSpaceData:
+    host: "localhost"
+    paths: "/astros/*"
+serviceEndpoints:
+  httpbin:
+    url: "https://httpbin.org"
+  seismic:
+    url: "https://65ca483b3b05d29307e01640.mockapi.io/api"
+  Daylight:
+    url: "https://65ca483b3b05d29307e01640.mockapi.io/api"
+  LocationNow:
+    url: "http://api.open-notify.org"
+  Peoplespace:
+    url: "http://api.open-notify.org"
+
+policies:
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - proxy
+  - rate-limit
+pipelines:
+  default:
+    apiEndpoints:
+      - api
+    policies:
+      # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+      # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: httpbin
+              changeOrigin: true
+  seismic:
+    apiEndpoints:
+      - seismicData
+    policies:
+      - log:
+          action:
+            message: "${req.method} ${req.originalUrl}"
+      - proxy:
+          - action:
+              serviceEndpoint: seismic
+              changeOrigin: true
+  Daylight:
+    apiEndpoints:
+      - DaylightData
+    policies:
+      - log:
+          action:
+            message: "${req.method} ${req.originalUrl}"
+      - proxy:
+          - action:
+              serviceEndpoint: Daylight
+              changeOrigin: true
+  LocationNow:
+    apiEndpoints:
+      - LocationNowData
+    policies:
+      - log:
+          action:
+            message: "${req.method} ${req.originalUrl}"
+      - proxy:
+          - action:
+              serviceEndpoint: LocationNow
+              changeOrigin: true
+  PeopleSpace:
+    apiEndpoints:
+      - PeopleSpaceData
+    policies:
+      - log:
+          action:
+            message: "${req.method} ${req.originalUrl}"
+      - proxy:
+          - action:
+              serviceEndpoint: PeopleSpace
+              changeOrigin: true
+
